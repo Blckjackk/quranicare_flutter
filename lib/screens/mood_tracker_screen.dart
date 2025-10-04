@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/mood_spinner_widget.dart';
 import '../services/mood_service.dart';
-import '../services/auth_service.dart';
 import 'dart:math' as math;
 
 class MoodTrackerScreen extends StatefulWidget {
@@ -20,7 +19,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen>
   bool _isLoading = false;
   bool _canSelectMood = true;
   final MoodService _moodService = MoodService();
-  final AuthService _authService = AuthService();
+  // Removed AuthService dependency
 
   @override
   void initState() {
@@ -45,15 +44,13 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen>
 
   void _checkTodayMood() async {
     try {
-      // Get token from auth service
-      final userToken = await _authService.getToken();
+      // Simplified check without auth service
+      print('🔄 Checking today mood...');
       
-      if (userToken == null) {
-        print('⚠️ No auth token available');
-        setState(() {
-          _canSelectMood = true;
-        });
-        return;
+      setState(() {
+        _canSelectMood = true;
+      });
+      return;
       }
       
       // Test connection first

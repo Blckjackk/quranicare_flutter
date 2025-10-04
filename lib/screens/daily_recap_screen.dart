@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import '../services/daily_recap_service.dart';
 import '../models/daily_mood_recap.dart';
 
@@ -35,7 +33,6 @@ class _DailyRecapScreenState extends State<DailyRecapScreen> {
         _errorMessage = '';
       });
       
-      await initializeDateFormatting('id', null);
       await _dailyRecapService.initialize();
       
       print('📱 Daily Recap Screen: Service initialized, loading data...');
@@ -137,6 +134,18 @@ class _DailyRecapScreenState extends State<DailyRecapScreen> {
     if (score >= 2.5) return const Color(0xFFF59E0B); // Yellow - neutral
     if (score >= 1.5) return const Color(0xFFFF9500); // Orange - sad
     return const Color(0xFFEF4444); // Red - very sad
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    return months[month - 1];
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day} ${_getMonthName(date.month)}';
   }
 
   @override
@@ -397,7 +406,7 @@ class _DailyRecapScreenState extends State<DailyRecapScreen> {
                     return DropdownMenuItem(
                       value: index + 1,
                       child: Text(
-                        DateFormat.MMMM('id').format(DateTime(2025, index + 1)),
+                        _getMonthName(index + 1),
                         style: const TextStyle(color: Colors.white),
                       ),
                     );
@@ -588,7 +597,7 @@ class _DailyRecapScreenState extends State<DailyRecapScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Mood ${DateFormat('dd MMMM', 'id').format(_selectedDate)}',
+                  'Mood ${_formatDate(_selectedDate)}',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -652,7 +661,7 @@ class _DailyRecapScreenState extends State<DailyRecapScreen> {
             const SizedBox(height: 8),
             Text(
               _hasUserData 
-                  ? 'Catat mood Anda di ${DateFormat('dd MMMM', 'id').format(_selectedDate)} untuk mulai tracking!'
+                  ? 'Catat mood Anda di ${_formatDate(_selectedDate)} untuk mulai tracking!'
                   : 'Mulai catat mood Anda setiap hari untuk melihat pola dan perkembangan kesehatan mental!',
               style: TextStyle(
                 fontSize: 14,

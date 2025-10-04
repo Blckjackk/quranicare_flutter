@@ -1,35 +1,31 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import '../models/admin/admin.dart';
 import '../config/app_config.dart';
 
 class AdminService {
   static String get baseUrl => '${AppConfig.baseUrl}/admin';
   
   String? _token;
+  static String? _memoryToken; // Simple in-memory storage
 
   // Get stored token
   Future<String?> getToken() async {
     if (_token != null) return _token;
     
-    final prefs = await SharedPreferences.getInstance();
-    _token = prefs.getString('admin_token');
+    _token = _memoryToken;
     return _token;
   }
 
   // Save token
   Future<void> saveToken(String token) async {
     _token = token;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('admin_token', token);
+    _memoryToken = token;
   }
 
   // Clear token
   Future<void> clearToken() async {
     _token = null;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('admin_token');
+    _memoryToken = null;
   }
 
   // Get headers with token
@@ -89,7 +85,7 @@ class AdminService {
         
         return {
           'success': true,
-          'admin': Admin.fromJson(admin),
+          'admin': admin,
           'message': data['message'] ?? 'Login successful',
         };
       } else {
@@ -150,7 +146,7 @@ class AdminService {
       if (response.statusCode == 200) {
         return {
           'success': true,
-          'admin': Admin.fromJson(data['admin']),
+          'admin': data['admin'],
         };
       } else {
         return {
