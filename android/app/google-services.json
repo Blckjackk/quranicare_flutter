@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "281452909965",
+    "project_id": "mtqmn-quranicare",
+    "storage_bucket": "mtqmn-quranicare.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281452909965:android:5dd982adafc47efcb019c4",
+        "android_client_info": {
+          "package_name": "com.mtqmn.quranicare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCWvy7zyafQiHjWhthGGS5eItpekI5z-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
