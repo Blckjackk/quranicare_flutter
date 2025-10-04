@@ -5,8 +5,8 @@ plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
-    // Firebase Google Services Plugin
-    id("com.google.gms.google-services")
+    // Firebase Google Services Plugin - temporarily disabled
+    // id("com.google.gms.google-services")
 }
 
 // Load the signing key properties
@@ -65,13 +65,13 @@ flutter {
 }
 
 dependencies {
-    // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
+    // Import the Firebase BoM - temporarily disabled
+    // implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
 
-    // Firebase products
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-storage")
-    implementation("com.google.firebase:firebase-messaging")
+    // Firebase products - temporarily disabled
+    // implementation("com.google.firebase:firebase-analytics")
+    // implementation("com.google.firebase:firebase-auth")
+    // implementation("com.google.firebase:firebase-firestore")
+    // implementation("com.google.firebase:firebase-storage")
+    // implementation("com.google.firebase:firebase-messaging")
 }

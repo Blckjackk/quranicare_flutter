@@ -10,11 +10,10 @@ class AppConfig {
   static String get baseUrl {
     if (isProduction) {
       // URL backend Laravel yang sudah di-deploy
-      // Ganti dengan URL server production Anda
-      return 'https://your-laravel-backend.com/api';
+      return 'https://quranicare-laravel.vercel.app/api';
     } else {
-      // URL untuk development (localhost)
-      return 'http://127.0.0.1:8000/api';
+      // URL untuk development - juga menggunakan production URL
+      return 'https://quranicare-laravel.vercel.app/api';
     }
   }
   

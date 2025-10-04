@@ -1,39 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:quranicare/screens/splash_screen.dart';
-import 'firebase_options.dart';
-import 'config/app_config.dart';
-import 'test_firebase_screen.dart';
-import 'test_font_screen.dart';
-import 'screens/onboarding_screen.dart';
-import 'screens/home/home_screen.dart';
-import 'screens/home/notification_screen.dart';
-import 'screens/mood_tracker_screen.dart';
-import 'screens/breathing_exercise/breathing_exercise_screen.dart';
-import 'screens/breathing_exercise/breathing_exercise_test_screen.dart';
-import 'screens/audio_relax/audio_relax_screen.dart';
-import 'screens/jurnal_refleksi/jurnal_refleksi_screen.dart';
-import 'screens/doa_dzikir_screen.dart';
-import 'screens/quranic_psychology/quranic_psychology_screen.dart';
-import 'screens/qalbuchat/qalbu_chat_screen.dart';
-import 'screens/alquran/alquran_screen.dart';
-import 'screens/auth/sign_in_screen.dart';
-import 'screens/auth/sign_up_screen.dart';
-import 'screens/auth/verification_screen.dart';
-import 'screens/auth/forgot_password_screen.dart';
-import 'screens/auth/create_profile_screen.dart';
-import 'screens/admin/admin_login_screen.dart';
-import 'screens/daily_recap_screen.dart';
+import 'package:quranicare/config/app_config.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize AppConfig
+  // Initialize app configuration
   AppConfig.initialize();
   
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
   runApp(const MyApp());
 }
 
@@ -43,67 +18,127 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'QuraniCare',
-      debugShowCheckedModeBanner: false,
+      title: AppConfig.appName,
       theme: ThemeData(
-        primaryColor: const Color(0xFF2D5A5A),
-        fontFamily: 'AbhayaLibre',
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2D5A5A),
-        ),
-        textTheme: const TextTheme(
-          displayLarge: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w800), // ExtraBold
-          displayMedium: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w700), // Bold
-          displaySmall: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w600), // SemiBold
-          headlineLarge: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w700), // Bold
-          headlineMedium: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w600), // SemiBold
-          headlineSmall: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w600), // SemiBold
-          titleLarge: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w600), // SemiBold
-          titleMedium: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w500), // Medium
-          titleSmall: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w500), // Medium
-          bodyLarge: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w400), // Regular
-          bodyMedium: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w400), // Regular
-          bodySmall: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w400), // Regular
-          labelLarge: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w500), // Medium
-          labelMedium: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w500), // Medium
-          labelSmall: TextStyle(fontFamily: 'AbhayaLibre', fontWeight: FontWeight.w400), // Regular
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
-      // home: const AdminLoginScreen(),
-      // home: const HomeScreen(),
-      routes: {
-        '/home': (context) => const HomeScreen(),
-        '/firebase-test': (context) => const TestFirebaseScreen(),
-        '/onboarding': (context) => const OnboardingScreen(),
-        '/signin': (context) => const SignInScreen(),
-        '/signup': (context) => const SignUpScreen(),
-        '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/create-profile': (context) => const CreateProfileScreen(),
-        '/notification': (context) => const NotificationScreen(),
-        '/mood-tracker': (context) => const MoodTrackerScreen(),
-        '/breathing-exercise': (context) => const BreathingExerciseScreen(),
-        '/breathing-test': (context) => const BreathingExerciseTestScreen(),
-        '/audio-relax': (context) => const AudioRelaxScreen(),
-        '/jurnal-refleksi': (context) => const JurnalRefleksiScreen(),
-        '/doa-dzikir': (context) => const DoaDzikirScreen(),
-        '/quranic-psychology': (context) => const QuranicPsychologyScreen(),
-        '/qalbu-chat': (context) => const QalbuChatScreen(),
-        '/alquran': (context) => const AlQuranScreen(),
-        '/admin-login': (context) => const AdminLoginScreen(),
-        '/daily-recap': (context) => const DailyRecapScreen(),
-        '/test-font': (context) => const TestFontScreen(),
-      },
-      onGenerateRoute: (settings) {
-        if (settings.name == '/verification') {
-          final email = settings.arguments as String;
-          return MaterialPageRoute(
-            builder: (context) => VerificationScreen(email: email),
-          );
-        }
-        return null;
-      },
+      home: const MyHomePage(title: 'Quranicare Flutter App'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+  String _apiStatus = 'Belum dicek';
+  bool _isLoadingApi = false;
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+  }
+
+  Future<void> _testApi() async {
+    setState(() {
+      _isLoadingApi = true;
+      _apiStatus = 'Menghubungi API...';
+    });
+
+    try {
+      final response = await http.get(
+        Uri.parse('${AppConfig.baseUrl}/test'),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _apiStatus = 'API Berhasil! ${data['message'] ?? 'Connected'}';
+        });
+      } else {
+        setState(() {
+          _apiStatus = 'API Error: ${response.statusCode}';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _apiStatus = 'API Error: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoadingApi = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'You have pushed the button this many times:',
+            ),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'API Base URL: ${AppConfig.baseUrl}',
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Version: ${AppConfig.version}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _isLoadingApi ? null : _testApi,
+              child: _isLoadingApi 
+                ? const CircularProgressIndicator()
+                : const Text('Test API Connection'),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'Status API: $_apiStatus',
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
