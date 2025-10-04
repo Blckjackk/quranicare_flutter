@@ -43,8 +43,8 @@ android {
         applicationId = "com.mtqmn.quranicare"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23  // Required for Firebase Auth
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 21  // Support Android 5.0+ (Lollipop) - more stable
+        targetSdk = 34  // Set specific target SDK for compatibility
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
